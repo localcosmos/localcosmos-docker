@@ -171,6 +171,13 @@ DATABASES = {
         'USER' : os.environ['DB_USER'],
         'PASSWORD' : os.environ['DB_PASSWORD'],
         'HOST' : os.environ['DB_HOST'],
+    },
+    'taxonomy' : {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ['TAXONOMY_DB_NAME'],
+        'USER': os.environ['TAXONOMY_DB_USER'],
+        'PASSWORD': os.environ['TAXONOMY_DB_PASSWORD'],
+        'HOST': os.environ['TAXONOMY_DB_HOST'],
     }
 }
 

@@ -27,11 +27,10 @@ ARG GRADLE_URL=https://services.gradle.org/distributions/$GRADLE_FILENAME
 ARG ANDROID_COMMAND_LINE_TOOLS_FILENAME=commandlinetools-linux-6200805_latest.zip
 ARG ANDROID_COMMAND_LINE_TOOLS_URL=https://dl.google.com/android/repository/$ANDROID_COMMAND_LINE_TOOLS_FILENAME
 
-# nodejs will be installed from nodesource to ensure appropriate version
-# https://github.com/nodesource/distributions
-ARG NODE_MAJOR=16
-ARG NODE_KEY_URL=https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key
-ARG NODE_URL=https://deb.nodesource.com/node_$NODE_MAJOR.x
+# nodejs will be installed using nvm
+# https://nodejs.org/en/download/package-manager
+ARG NODE_VERSION=22.3.0
+ARG NVM_URL=https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/UTC
@@ -89,12 +88,17 @@ RUN yes | sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;33.0.2" "platforms;
 
 # install nodejs
 WORKDIR /tmp
-RUN mkdir -p /etc/apt/keyrings &&\
-    curl -fsSL $NODE_KEY_URL | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg &&\
-    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] $NODE_URL nodistro main" | tee /etc/apt/sources.list.d/nodesource.list &&\
-    apt-get update &&\
-    apt-get install -y nodejs &&\
+RUN mkdir -p /usr/local/nvm
+ENV NVM_DIR /usr/local/nvm
+RUN curl -o- ${NVM_URL} | bash
+RUN . ${NVM_DIR}/nvm.sh && nvm install ${NODE_VERSION} &&\
+    nvm alias default $NODE_VERSION &&\
+    nvm use default &&\
 	rm -rf /var/lib/{apt,dpkg,cache,log}/
+
+# add the node commands like npm to PATH to make it accessible for the Cordova Builder
+ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin
+ENV PATH $NODE_PATH:$PATH
 
 # create the uwsgi user to not run uwsgi as root
 RUN useradd uwsgi
