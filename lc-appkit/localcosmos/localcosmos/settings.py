@@ -172,7 +172,7 @@ DATABASES = {
         'PASSWORD' : os.environ['DB_PASSWORD'],
         'HOST' : os.environ['DB_HOST'],
     },
-    'taxonomy' : {
+    'taxonomy_db' : {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.environ['TAXONOMY_DB_NAME'],
         'USER': os.environ['TAXONOMY_DB_USER'],
@@ -180,11 +180,6 @@ DATABASES = {
         'HOST': os.environ['TAXONOMY_DB_HOST'],
     }
 }
-
-TAXONOMY_DATABASE_CONNECTION = os.environ.get('TAXONOMY_DATABASE_CONNECTION', None)
-
-if TAXONOMY_DATABASE_CONNECTION:
-    DATABASES['taxonomy_db'] = json.loads(TAXONOMY_DATABASE_CONNECTION)
 
 ORIGINAL_BACKEND = 'django.contrib.gis.db.backends.postgis'
 DATABASE_ROUTERS = ['taxonomy.DBRouter.TaxonomyRouter', 'django_tenants.routers.TenantSyncRouter']
@@ -278,7 +273,7 @@ APP_KIT_MODE = os.environ.get('APP_KIT_MODE', 'live')
 APP_KIT_SANDBOX_USER = os.environ.get('APP_KIT_SANDBOX_USER', 'user')
 APP_KIT_SANDBOX_PASSWORD = os.environ.get('APP_KIT_SANDBOX_PASSWORD', 'sandbox1234')
 
-APP_KIT_DEFAULT_FRONTEND = 'Flat'
+APP_KIT_DEFAULT_FRONTEND = 'Multiverse'
 
 APP_KIT_ANDROID_KEYSTORE_PATH = os.environ['APP_KIT_ANDROID_KEYSTORE_PATH']
 APP_KIT_ANDROID_KEYSTORE_PASS = os.environ['APP_KIT_ANDROID_KEYSTORE_PASS']

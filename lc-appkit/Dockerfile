@@ -17,8 +17,7 @@ ARG POSTGRESQL_VERSION=16
 ARG OPENJDK_VERSION=11
 ARG INKSCAPE_VERSION=1.2.2-2ubuntu7
 
-ARG DJANGO_VERSION=5.0.4
-ARG APP_KIT_VERSION=0.2.7
+ARG APP_KIT_VERSION=0.3.2
 
 # Android Studio and Gradle will be installed after downloading the appropriate zip files
 ARG GRADLE_VERSION=7.6
@@ -118,7 +117,7 @@ RUN python$PYTHON_VERSION -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # install all django apps and requirements
-RUN pip install setuptools django==$DJANGO_VERSION &&\
+RUN pip install setuptools &&\
     pip install localcosmos-app-kit==$APP_KIT_VERSION &&\
     pip install uwsgi &&\
     mkdir -p /var/log/uwsgi/
