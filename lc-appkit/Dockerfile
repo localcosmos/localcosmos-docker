@@ -14,13 +14,13 @@ LABEL maintainer = "Thomas Uher <thomas.uher@code-for-nature.com>"
 
 ARG PYTHON_VERSION=3.12
 ARG POSTGRESQL_VERSION=16
-ARG OPENJDK_VERSION=11
+ARG OPENJDK_VERSION=17
 ARG INKSCAPE_VERSION=1.2.2-2ubuntu7
 
-ARG APP_KIT_VERSION=0.3.2
+ARG APP_KIT_VERSION=0.3.4
 
 # Android Studio and Gradle will be installed after downloading the appropriate zip files
-ARG GRADLE_VERSION=7.6
+ARG GRADLE_VERSION=8.7
 ARG GRADLE_FILENAME=gradle-$GRADLE_VERSION-bin.zip
 ARG GRADLE_URL=https://services.gradle.org/distributions/$GRADLE_FILENAME
 ARG ANDROID_COMMAND_LINE_TOOLS_FILENAME=commandlinetools-linux-6200805_latest.zip
@@ -83,7 +83,7 @@ ENV ANDROID_SDK_ROOT="/opt/Android/Sdk"
 ENV ANDROID_HOME="/opt/Android/Sdk"
 
 WORKDIR /opt/Android/Sdk
-RUN yes | sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;33.0.2" "platforms;android-33" "extras;android;m2repository"
+RUN yes | sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;34.0.0" "platforms;android-34" "extras;android;m2repository"
 
 # install nodejs
 WORKDIR /tmp
