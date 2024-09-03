@@ -17,8 +17,6 @@ ARG POSTGRESQL_VERSION=16
 ARG OPENJDK_VERSION=17
 ARG INKSCAPE_VERSION=1.2.2-2ubuntu7
 
-ARG APP_KIT_VERSION=0.3.4
-
 # Android Studio and Gradle will be installed after downloading the appropriate zip files
 ARG GRADLE_VERSION=8.7
 ARG GRADLE_FILENAME=gradle-$GRADLE_VERSION-bin.zip
@@ -115,6 +113,9 @@ ENV VIRTUAL_ENV=/opt/localcosmos/venv
 RUN python$PYTHON_VERSION -m venv $VIRTUAL_ENV
 
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+# define APP_KIT_VERSION here do not rebuild whole layered filesystem on app kit upgrade
+ARG APP_KIT_VERSION=0.3.7
 
 # install all django apps and requirements
 RUN pip install setuptools &&\
