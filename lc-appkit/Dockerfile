@@ -10,7 +10,7 @@
 ############################################################
 FROM ubuntu:24.04
 
-LABEL maintainer = "Thomas Uher <thomas.uher@code-for-nature.com>"
+LABEL maintainer="Thomas Uher <thomas.uher@code-for-nature.com>"
 
 ARG PYTHON_VERSION=3.12
 ARG POSTGRESQL_VERSION=16
@@ -86,7 +86,9 @@ RUN yes | sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;34.0.0" "platforms;
 # install nodejs
 WORKDIR /tmp
 RUN mkdir -p /usr/local/nvm
-ENV NVM_DIR /usr/local/nvm
+
+ENV NVM_DIR=/usr/local/nvm
+
 RUN curl -o- ${NVM_URL} | bash
 RUN . ${NVM_DIR}/nvm.sh && nvm install ${NODE_VERSION} &&\
     nvm alias default $NODE_VERSION &&\
@@ -94,13 +96,12 @@ RUN . ${NVM_DIR}/nvm.sh && nvm install ${NODE_VERSION} &&\
 	rm -rf /var/lib/{apt,dpkg,cache,log}/
 
 # add the node commands like npm to PATH to make it accessible for the Cordova Builder
-ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin
-ENV PATH $NODE_PATH:$PATH
+ENV NODE_PATH=$NVM_DIR/versions/node/v$NODE_VERSION/bin
+ENV PATH=$NODE_PATH:$PATH
 
 # create the uwsgi user to not run uwsgi as root
 RUN useradd uwsgi
 
-# install django
 ENV PIP_ROOT_USER_ACTION=ignore
 RUN mkdir /opt/localcosmos
 
@@ -115,7 +116,7 @@ RUN python$PYTHON_VERSION -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # define APP_KIT_VERSION here do not rebuild whole layered filesystem on app kit upgrade
-ARG APP_KIT_VERSION=0.4.3
+ARG APP_KIT_VERSION=0.5.6
 
 # install all django apps and requirements
 RUN pip install setuptools &&\
