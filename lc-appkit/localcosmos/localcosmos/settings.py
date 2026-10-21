@@ -71,10 +71,11 @@ SHARED_APPS = (
     'rest_framework.authtoken',
     'drf_spectacular',
 
-    'octicons',
-
     'imagekit', 
     'django_cleanup.apps.CleanupConfig',
+    
+    'django_rest_passwordreset',
+    'fcm_django',
 )
 
 TENANT_APPS = (
@@ -87,6 +88,9 @@ TENANT_APPS = (
     'localcosmos_server.datasets',
     'localcosmos_server.template_content', # accessible via app_kit or app_admin
     'localcosmos_server.analytics',
+    'localcosmos_server.geography',
+    'localcosmos_server.achievements',
+    'localcosmos_server.push_notifications',
     'app_kit',
     'app_kit.features.backbonetaxonomy',
     'app_kit.features.generic_forms',
@@ -95,6 +99,7 @@ TENANT_APPS = (
     'app_kit.features.glossary',
     'app_kit.features.maps',
     'app_kit.features.frontend',
+    'app_kit.features.object_classes',
     
     'content_licencing',
 
@@ -259,6 +264,7 @@ APP_KIT_URL = 'app-kit/'
 APP_KIT_SUPPORTED_PLATFORMS = json.loads(os.environ['APP_KIT_SUPPORTED_PLATFORMS'])
 APP_KIT_TEMPORARY_FOLDER = '/opt/localcosmos/tmp/'
 APP_KIT_PRIVATE_FRONTENDS_PATH = '/opt/localcosmos_frontends/'
+APP_KIT_FRONTEND_RESOURCE_FILES_ROOT = '/opt/localcosmos_frontend_resource_files/'
 
 APP_KIT_ENABLE_META_NODE_DESCRIPTION = os.environ.get('APP_KIT_ENABLE_META_NODE_DESCRIPTION', False) == 'True'
 APP_KIT_LOAD_TRUNCATED_IMAGES = True
@@ -286,15 +292,22 @@ APP_KIT_STAGING_BASE_DOMAIN = os.environ['APP_KIT_STAGING_BASE_DOMAIN']
 RESERVED_SUBDOMAINS = ['public', 'www', 'testing', 'staging', 'beta', 'live', 'sandbox', 'jenkins']
 
 # EMAILS
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 DEFAULT_FROM_EMAIL = os.environ['DEFAULT_FROM_EMAIL']
 SERVER_EMAIL = os.environ['SERVER_EMAIL']
-EMAIL_HOST = os.environ['EMAIL_HOST']
-EMAIL_PORT = int(os.environ['EMAIL_PORT'])
-EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
-EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
-EMAIL_USE_TLS = os.environ['EMAIL_USE_TLS'] == 'True'
-EMAIL_USE_SSL = os.environ['EMAIL_USE_SSL'] == 'True'
+
+MAILERS = {
+    "default": {
+        "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+        "OPTIONS": {
+            "host": os.environ['EMAIL_HOST'],
+            "port": int(os.environ['EMAIL_PORT']),
+            "use_tls": os.environ['EMAIL_USE_TLS'] == 'True',
+            "use_ssl": os.environ['EMAIL_USE_SSL'] == 'True',
+            "username": os.environ['EMAIL_HOST_USER'],
+            "password": os.environ['EMAIL_HOST_PASSWORD'],
+        },
+    },
+}
 
 # CSRF
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -304,7 +317,7 @@ from localcosmos_server.settings import *
 
 if DEBUG == True:
     SESSION_COOKIE_SECURE = False
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+    MAILERS['default']['BACKEND'] = "django.core.mail.backends.console.EmailBackend"
 
 
 # override LOGIN_REDIRECT_URL from localcosmos_server.settings
@@ -325,6 +338,18 @@ LOCALCOSMOS_APPS_ROOT = '/var/www/localcosmos/apps/'
 # DeepL integration
 DEEPL_API_URL = os.environ['DEEPL_API_URL']
 DEEPL_AUTH_KEY = os.environ['DEEPL_AUTH_KEY']
+
+ENABLE_FIREBASE_MESSAGING = os.environ.get('ENABLE_FIREBASE_MESSAGING', 'False') == 'True'
+FIREBASE_APP = None
+
+if ENABLE_FIREBASE_MESSAGING:
+    import firebase_admin
+    from firebase_admin import credentials
+
+    _firebase_creds = json.loads(os.environ["FIREBASE_CREDENTIALS_JSON"])
+    cred = credentials.Certificate(_firebase_creds)
+    FIREBASE_APP = firebase_admin.initialize_app(cred)
+
 
 LOGGING = {
     'version': 1,

@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+
+    triggers {
+        cron('0 2 * * *')
+    }
+
+    environment {
+        LC_DB_CONTAINER             = credentials('lc-db-container')
+        LC_APPKIT_CONTAINER_PATTERN = credentials('lc-appkit-container-pattern')
+        LC_DB_USER                  = credentials('lc-db-user')
+        LC_DB_NAME                  = credentials('lc-db-name')
+        LC_LOCAL_BACKUP_DIR         = '/var/backups/localcosmos'
+        LC_RETENTION_DAYS           = '7'
+    }
+
+    stages {
+        stage('Backup') {
+            steps {
+                sh './backup/backup.sh'
+            }
+        }
+    }
+
+    post {
+        failure {
+            mail to: 'you@example.com',
+                 subject: "LocalCosmos backup FAILED on ${env.BUILD_URL}",
+                 body: "Check the Jenkins build log: ${env.BUILD_URL}"
+        }
+    }
+}

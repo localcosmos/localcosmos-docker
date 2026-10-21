@@ -18,10 +18,10 @@ ARG OPENJDK_VERSION=17
 ARG INKSCAPE_VERSION=1.2.2-2ubuntu7
 
 # Android Studio and Gradle will be installed after downloading the appropriate zip files
-ARG GRADLE_VERSION=8.7
+ARG GRADLE_VERSION=8.13
 ARG GRADLE_FILENAME=gradle-$GRADLE_VERSION-bin.zip
 ARG GRADLE_URL=https://services.gradle.org/distributions/$GRADLE_FILENAME
-ARG ANDROID_COMMAND_LINE_TOOLS_FILENAME=commandlinetools-linux-6200805_latest.zip
+ARG ANDROID_COMMAND_LINE_TOOLS_FILENAME=commandlinetools-linux-15859902_latest.zip
 ARG ANDROID_COMMAND_LINE_TOOLS_URL=https://dl.google.com/android/repository/$ANDROID_COMMAND_LINE_TOOLS_FILENAME
 
 # nodejs will be installed using nvm
@@ -74,14 +74,15 @@ RUN mkdir /opt/Android &&\
 	mkdir /opt/Android/Sdk/cmdline-tools &&\
 	wget $ANDROID_COMMAND_LINE_TOOLS_URL &&\
 	unzip $ANDROID_COMMAND_LINE_TOOLS_FILENAME -d /opt/Android/Sdk/cmdline-tools &&\
+	mv /opt/Android/Sdk/cmdline-tools/cmdline-tools /opt/Android/Sdk/cmdline-tools/latest &&\
 	rm $ANDROID_COMMAND_LINE_TOOLS_FILENAME
 
-ENV PATH="/opt/Android/Sdk/cmdline-tools/tools/bin:${PATH}"
+ENV PATH="/opt/Android/Sdk/cmdline-tools/latest/bin:${PATH}"
 ENV ANDROID_SDK_ROOT="/opt/Android/Sdk"
 ENV ANDROID_HOME="/opt/Android/Sdk"
 
 WORKDIR /opt/Android/Sdk
-RUN yes | sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;34.0.0" "platforms;android-34" "extras;android;m2repository"
+RUN yes | sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;36.0.0" "platforms;android-36" "extras;android;m2repository"
 
 # install nodejs
 WORKDIR /tmp
@@ -116,7 +117,7 @@ RUN python$PYTHON_VERSION -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # define APP_KIT_VERSION here do not rebuild whole layered filesystem on app kit upgrade
-ARG APP_KIT_VERSION=0.7.4
+ARG APP_KIT_VERSION=1.4.4
 
 # install all django apps and requirements
 RUN pip install setuptools &&\
