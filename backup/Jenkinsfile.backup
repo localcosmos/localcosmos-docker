@@ -12,6 +12,7 @@ pipeline {
         LC_DB_NAME                  = credentials('lc-db-name')
         LC_LOCAL_BACKUP_DIR         = '/var/backups/localcosmos'
         LC_RETENTION_DAYS           = '7'
+        LC_NOTIFY_EMAIL             = credentials('lc-notify-email')
     }
 
     stages {
@@ -24,7 +25,7 @@ pipeline {
 
     post {
         failure {
-            mail to: 'you@example.com',
+            mail to: "${env.LC_NOTIFY_EMAIL}",
                  subject: "LocalCosmos backup FAILED on ${env.BUILD_URL}",
                  body: "Check the Jenkins build log: ${env.BUILD_URL}"
         }
