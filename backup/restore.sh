@@ -120,11 +120,11 @@ if [[ $# -eq 0 ]]; then usage; fi
 case "${1:-}" in
     --list)
         echo "Available backups in $LOCAL_BACKUP_DIR:"
-        ls -1 "$LOCAL_BACKUP_DIR" | sort
+        find "$LOCAL_BACKUP_DIR" -maxdepth 1 -mindepth 1 -type d | sort | xargs -I{} basename {}
         exit 0
         ;;
     --latest)
-        TIMESTAMP=$(ls -1 "$LOCAL_BACKUP_DIR" | sort | tail -n1)
+        TIMESTAMP=$(find "$LOCAL_BACKUP_DIR" -maxdepth 1 -mindepth 1 -type d | sort | tail -n1 | xargs basename)
         if [[ -z "$TIMESTAMP" ]]; then
             echo "Error: no backups found in $LOCAL_BACKUP_DIR" >&2
             exit 1
@@ -171,11 +171,9 @@ log "Restoring PostgreSQL database '$DB_NAME' into container '$DB_CONTAINER' ...
 if $DRY_RUN; then
     echo "[dry-run] gunzip -c $DB_DUMP_FILE | docker exec -i $DB_CONTAINER psql -U $DB_USER -d $DB_NAME"
 else
-    # Ensure the target database exists before restoring
-    docker exec "$DB_CONTAINER" \
-        psql -U "$DB_USER" -tc "SELECT 1 FROM pg_database WHERE datname='$DB_NAME'" \
-        | grep -q 1 \
-        || docker exec "$DB_CONTAINER" createdb -U "$DB_USER" "$DB_NAME"
+    # Drop and recreate the database to guarantee a clean restore
+    docker exec "$DB_CONTAINER" psql -U "$DB_USER" -c "DROP DATABASE IF EXISTS \"$DB_NAME\";"
+    docker exec "$DB_CONTAINER" createdb -U "$DB_USER" "$DB_NAME"
 
     # Plain SQL dump restores with psql, no pg_restore needed
     gunzip -c "$DB_DUMP_FILE" \

@@ -108,8 +108,8 @@ else
         docker exec "$DB_CONTAINER" pg_dumpall -U "$DB_USER" \
             | gzip > "$DB_DUMP_FILE"
     else
-        # -Fp = plain SQL; gzip applied here, not inside pg_dump, to avoid double-compression
-        docker exec "$DB_CONTAINER" pg_dump -U "$DB_USER" -Fp "$DB_NAME" \
+        # -Fp = plain SQL; --clean adds DROP statements so restore overwrites existing data cleanly
+        docker exec "$DB_CONTAINER" pg_dump -U "$DB_USER" -Fp --clean --if-exists "$DB_NAME" \
             | gzip > "$DB_DUMP_FILE"
     fi
     log "Database dump written to $DB_DUMP_FILE ($(du -sh "$DB_DUMP_FILE" | cut -f1))"
