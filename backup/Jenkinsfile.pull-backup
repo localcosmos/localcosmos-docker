@@ -10,7 +10,7 @@ pipeline {
         LC_SOURCE_HOST      = credentials('lc-source-host')
         LC_BACKUP_HTTP_USER = credentials('lc-backup-http-user')
         LC_BACKUP_HTTP_PASS = credentials('lc-backup-http-pass')
-        LC_BACKUP_HTTP_PATH = '/backups/localcosmos/'
+        LC_BACKUP_HTTP_PATH = '/backups/'
         LC_LOCAL_BACKUP_DIR = '/var/backups/localcosmos'
         // Keep more sets on the backup machine than on the source
         LC_RETENTION_DAYS   = '14'

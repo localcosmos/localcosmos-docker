@@ -68,7 +68,7 @@ run wget \
     --recursive \
     --no-parent \
     --no-host-directories \
-    --cut-dirs=2 \
+    --cut-dirs=1 \
     --timestamping \
     --reject=index.html \
     --http-user="$BACKUP_HTTP_USER" \
