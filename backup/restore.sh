@@ -172,7 +172,8 @@ if $DRY_RUN; then
     echo "[dry-run] gunzip -c $DB_DUMP_FILE | docker exec -i $DB_CONTAINER psql -U $DB_USER -d $DB_NAME"
 else
     # Drop and recreate the database to guarantee a clean restore
-    docker exec "$DB_CONTAINER" psql -U "$DB_USER" -c "DROP DATABASE IF EXISTS \"$DB_NAME\";"
+    # Connect to the postgres maintenance DB to drop the target DB
+    docker exec "$DB_CONTAINER" psql -U "$DB_USER" -d postgres -c "DROP DATABASE IF EXISTS \"$DB_NAME\";"
     docker exec "$DB_CONTAINER" createdb -U "$DB_USER" "$DB_NAME"
 
     # Plain SQL dump restores with psql, no pg_restore needed

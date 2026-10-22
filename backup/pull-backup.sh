@@ -83,10 +83,22 @@ log "Pull complete."
 # ---------------------------------------------------------------------------
 log "Pruning backup sets older than $RETENTION_DAYS days in $LOCAL_BACKUP_DIR ..."
 
-if $DRY_RUN; then
-    echo "[dry-run] find $LOCAL_BACKUP_DIR -maxdepth 1 -mindepth 1 -type d -mtime +$RETENTION_DAYS -exec rm -rf {} +"
-else
-    find "$LOCAL_BACKUP_DIR" -maxdepth 1 -mindepth 1 -type d -mtime +"$RETENTION_DAYS" -exec rm -rf {} +
+# Prune by the timestamp in the directory name, not local mtime.
+# mtime-based pruning would delete all sets after RETENTION_DAYS of source silence.
+CUTOFF=$(date -u -d "$RETENTION_DAYS days ago" +"%Y-%m-%dT%H-%M-%SZ")
+
+while IFS= read -r -d '' dir; do
+    name=$(basename "$dir")
+    if [[ "$name" < "$CUTOFF" ]]; then
+        if $DRY_RUN; then
+            echo "[dry-run] rm -rf $dir"
+        else
+            rm -rf "$dir"
+        fi
+    fi
+done < <(find "$LOCAL_BACKUP_DIR" -maxdepth 1 -mindepth 1 -type d -print0)
+
+if ! $DRY_RUN; then
     echo "Pruning done."
 fi
 
