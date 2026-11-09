@@ -264,7 +264,7 @@ APP_KIT_URL = 'app-kit/'
 APP_KIT_SUPPORTED_PLATFORMS = json.loads(os.environ['APP_KIT_SUPPORTED_PLATFORMS'])
 APP_KIT_TEMPORARY_FOLDER = '/opt/localcosmos/tmp/'
 APP_KIT_PRIVATE_FRONTENDS_PATH = '/opt/localcosmos_frontends/'
-APP_KIT_FRONTEND_RESOURCE_FILES_ROOT = '/opt/localcosmos_frontend_resource_files/'
+APP_KIT_FRONTEND_RESOURCE_FILES_ROOT = '/opt/apps/frontend_resource_files/'
 
 APP_KIT_ENABLE_META_NODE_DESCRIPTION = os.environ.get('APP_KIT_ENABLE_META_NODE_DESCRIPTION', False) == 'True'
 APP_KIT_LOAD_TRUNCATED_IMAGES = True

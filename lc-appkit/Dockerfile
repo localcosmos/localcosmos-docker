@@ -117,7 +117,7 @@ RUN python$PYTHON_VERSION -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # define APP_KIT_VERSION here do not rebuild whole layered filesystem on app kit upgrade
-ARG APP_KIT_VERSION=1.4.4
+ARG APP_KIT_VERSION=1.4.8
 
 # install all django apps and requirements
 RUN pip install setuptools &&\
